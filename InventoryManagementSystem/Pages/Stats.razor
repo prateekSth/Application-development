@@ -1,0 +1,111 @@
+﻿@page "/stats"
+
+<div class="row mt-3 mb-3">
+	<div class="col-6">
+		<h3 class="text-primary fw-bold">Product Index</h3>
+	</div>
+</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				<div class="d-flex">Item Name</div>
+			</th>
+			<th>
+				<div class="d-flex">Quantity</div>
+			</th>
+			<th>
+				<div class="d-flex">Ordered By</div>
+			</th>
+			<th>
+				<div class="d-flex">Approved By</div>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			IEnumerable<Models.Order> orders = _orders;
+
+			foreach (var order in orders)
+			{
+				<tr>
+					<td>
+						@{
+							var product = ProductService.Get_By_Id(order.ProductId);
+							<span>@(product.Title)</span>
+						}
+					</td>
+					<td>
+						@order.Quantity
+					</td>
+					<td>
+						@{
+							var orderBy = UserService.Get_By_Id(order.OrderedBy);
+							<span>@(orderBy.Username)</span>
+						}
+					</td>
+					<td>
+						@{
+							var approvedBy = UserService.Get_By_Id(order.ApprovedBy);
+							<span>@(approvedBy.Username)</span>
+						}
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>
+
+<div class="row mt-3 mb-3">
+	<div class="col-6">
+		<h3>Product Stats</h3>
+	</div>
+</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				<div class="d-flex">Item Name</div>
+			</th>
+			<th>
+				<div class="d-flex">Quantity</div>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			IEnumerable<Models.OrderQuantity> stats = _stats;
+
+			foreach (var stat in stats)
+			{
+				<tr>
+					<td>
+						@{
+							var product = ProductService.Get_By_Id(stat.Item);
+							<span>@(product.Title)</span>
+						}
+					</td>
+					<td>
+						@stat.Quantity
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>
+
+
+@code {
+	public List<Models.Order> _orders { get; set; }
+
+	public List<Models.OrderQuantity> _stats { get; set; }
+
+
+	protected override void OnInitialized()
+	{
+		_orders = OrderService.Get_All().Where(x => x.IsApproved).ToList();
+		_stats = StatsService.Get_Ordered_Quantity();
+	}
+}

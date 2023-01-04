@@ -1,0 +1,83 @@
+﻿@page "/register"
+
+@inject NavigationManager NavManager
+<div class="vh-100" style="background-color: #9A616D;">
+	<div class="container py-5 h-100">
+		<div class="row d-flex align-content-center justify-content-center h-100">
+			<div class="col col-xl-10">
+				<div class="card " style="border-radius: 1rem;">
+					<div class="row g-0">
+						<div class="col-md-6 col-lg-5 d-none d-md-block">
+							<img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
+								 alt="login form" class="img-fluid" style="border-radius: 1rem 0 0 1rem; " />
+						</div>
+						<div class="col-md-6 col-lg-7 d-flex align-items-center">
+							<div class="card-body p-4 p-lg-5 text-black">
+								<form class="mb-1 mt-md-4" @onsubmit="RegisterHandler">
+									<h2 class="fw-bold mb-2">Register</h2>
+									<p class=" mb-4 ">Sign up to our system</p>
+									<div class="mb-3">
+										<label for="text" class="form-label">Username</label>
+										<input type="text" class="form-control" @bind="username" placeholder="Enter your username">
+									</div>
+									<div class="mb-3">
+										<label for="text" class="form-label">Email</label>
+										<input type="text" class="form-control" @bind="email" placeholder="Enter your email address">
+									</div>
+									<div class="mb-4">
+										<label for="password" class="form-label">Password</label>
+										<input type="password" class="form-control" @bind="password" placeholder="*************">
+									</div>
+									<p class="mb-1 mt-2 pb-lg-2 text-end " style="color: #393f81; font-size:0.85rem">
+										Already have an account? <a href="/login"
+																	style="color: #393f81;">Login here</a>
+									</p>
+									<div class="d-grid">
+										<button class="btn btn-primary btn-lg btn-block" type="submit">Register</button>
+									</div>
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+
+	[CascadingParameter]
+	private State globalState { get; set; }
+
+	private bool _showDefaultCredentials { get; set; }
+
+	private string username { get; set; }
+
+	private string email { get; set; }
+
+	private string password { get; set; }
+
+	private string errorMessage = "";
+
+	private void RegisterHandler()
+	{
+		try
+		{
+			errorMessage = "";
+
+			var user = UserService.Create(Guid.Empty, username, email, password, Role.Staff);
+
+			if (user != null)
+			{
+				NavManager.NavigateTo("/login");
+			}
+		}
+		catch (Exception e)
+		{
+			errorMessage = e.Message;
+			Console.WriteLine(e);
+		}
+	}
+}

@@ -1,0 +1,104 @@
+﻿@page "/login"
+
+@inject NavigationManager NavManager
+<div class="vh-100" style="background-color: #9A616D;">
+	<div class="container py-5 h-100">
+		<div class="row d-flex align-content-center justify-content-center">
+			<div class="col col-xl-10">
+				<div class="card " style="border-radius: 1rem;">
+					<div class="row ">
+						<div class="col-md-6 col-lg-5 d-none d-md-block">
+							<img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
+								 alt="login form" class="img-fluid" style="border-radius: 1rem 0 0 1rem; " />
+						</div>
+						<div class="col-md-6 col-lg-7 d-flex align-items-center">
+							<div class="card-body p-4 p-lg-5 text-black">
+
+								<form @onsubmit="LoginHandler">
+
+									<div class="d-flex align-items-center mb-3 pb-1">
+										<span class="h1 fw-bold mb-0">Login</span>
+									</div>
+
+									<h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign into your account</h5>
+
+									<div class="mb-2">
+										<label for="text" class="form-label">Username</label>
+										<input type="text" class="form-control" @bind="username" placeholder="Enter your Username">
+									</div>
+									<div class="mb-2">
+										<label for="password" class="form-label">Password</label>
+										<input type="password" class="form-control" @bind="password" placeholder="*************">
+									</div>
+									@if (!string.IsNullOrEmpty(errorMessage))
+									{
+										<AlertMessage Type="danger" Message="@errorMessage" />
+									}
+									<p class="mb-1 mt-2 py-lg-2 text-end" style="color: #393f81; font-size:0.85rem">
+										Don't have an account? <a href="/register"
+																  style="color: #393f81;">Register here</a>
+									</p>
+									<div class="d-grid pt-1 mb-4">
+										<button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+									</div>
+									
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@code {
+
+	[CascadingParameter]
+	private State globalState { get; set; }
+
+	private string username { get; set; }
+
+	private string password { get; set; }
+
+	private string errorMessage = "";
+
+	protected override void OnInitialized()
+	{
+		try
+		{
+			var user = UserService.Login(UserService.Seed_Username, UserService.Seed_Password);
+		}
+		catch
+		{
+
+		}
+
+		globalState.CurrentUser = null;
+
+		errorMessage = "";
+	}
+
+	private void LoginHandler()
+	{
+		try
+		{
+			errorMessage = "";
+
+			var user = globalState.CurrentUser = UserService.Login(username, password);
+
+			if (user != null)
+			{
+				NavManager.NavigateTo("/products");
+			}
+		}
+
+		catch (Exception e)
+		{
+			errorMessage = e.Message;
+			Console.WriteLine(e);
+		}
+	}
+}
+
+
