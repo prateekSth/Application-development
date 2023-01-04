@@ -73,7 +73,13 @@
             }
         }
     </tbody>
+
 </table>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <AlertMessage Type="danger" Message="@_errorMessage" />
+}
 
 @code {
 
@@ -88,6 +94,8 @@
 
     public string _sortDirection = "ascending";
 
+    public string _errorMessage = "";
+
     protected override void OnInitialized()
     {
         _orders = OrderService.Get_All();
@@ -95,8 +103,20 @@
 
     private void ToggleDone(Order order)
     {
-        order.IsApproved = !order.IsApproved;
-        _orders = OrderService.Update(order.Id, _globalState.CurrentUser.Id);
+        try
+        {
+
+            _errorMessage = "";
+
+            order.IsApproved = !order.IsApproved;
+
+            _orders = OrderService.Update(order.Id, _globalState.CurrentUser.Id);
+
+        }
+        catch (Exception e)
+        {
+            _errorMessage = e.Message;
+        }
     }
 
     private void SortByHandler(string sortByName)

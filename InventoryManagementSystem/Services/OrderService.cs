@@ -47,10 +47,10 @@ public class OrderService
 		var order_time = (int)DateTime.Now.Hour;
 
 		//To gather order from monday to friday from 9 am to 6 pm
-		if (order_day >= 2 && order_day <= 6)
-		{
-			if (order_time >= 9 && order_time <= 18)
-			{
+		//if (order_day >= 2 && order_day <= 6)
+		//{
+		//	if (order_time >= 9 && order_time <= 18)
+		//	{
 				var orders = Get_All();
 				
 				var products = ProductService.Get_All();
@@ -80,16 +80,16 @@ public class OrderService
 				Save_All(orders);
 
 				return orders;
-			}
-			else
-			{
-				throw new Exception("Orders can be place between 9AM and 6PM only.");
-			}
-		}
-		else
-		{
-			throw new Exception("Orders can be placed between Monday and Friday only.");
-		}
+		//	}
+		//	else
+		//	{
+		//		throw new Exception("Orders can be place between 9AM and 6PM only.");
+		//	}
+		//}
+		//else
+		//{
+		//	throw new Exception("Orders can be placed between Monday and Friday only.");
+		//}
 		
 	}
 
@@ -109,7 +109,12 @@ public class OrderService
 			throw new Exception("Order not found.");
 		}
 
-		order.ApprovedBy = userId;
+		if(order.Quantity > product.Quantity)
+		{
+            throw new Exception("Cant order more than the existing quantity of the product.");
+        }
+
+        order.ApprovedBy = userId;
 		order.IsApproved = true;
 		order.ApprovedDate = DateTime.Now;
 		product.Quantity -= order.Quantity;
